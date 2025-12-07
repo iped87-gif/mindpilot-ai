@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindPilot AI – The Assistant Thinks Ahead for You</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  
+  <!-- Google Translate Widget (support 130+ bahasa: Melayu, English, Indonesia, Mandarin, Tamil, Arab, Hindi, Jepun, Korea, Thai, Vietnam, Rusia, Perancis, Sepanyol, dll) -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'ms,en,id,zh-CN,zh-TW,ta,ar,hi,ja,ko,th,vi,ru,fr,es,de,it,pt,nl,pl,tr,fa,ur,bn,te,pa,gu,kn,ml,th,my,km,lo,ne,si,am,he,el,sv,da,no,fi,hu,cs,ro,bg,uk,sr,hr,sl,lt,lv,et,sw,tl,fil',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <style>
+    :root {
+      --bg: #050814;
+      --card: #0b1022;
+      --primary: #0a84ff;
+      --accent: #4bc6b9;
+      --text: #f5f7ff;
+      --muted: #9aa0b8;
+      --border: #1e2438;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #101633 0, #050814 45%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* Google Translate Styling (dropdown kanan atas, auto semua bahasa) */
+    #google_translate_element {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(5,8,20,0.9);
+      padding: 8px 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
+    #google_translate_element:hover { transform: scale(1.05); }
+    .goog-te-gadget-simple {
+      background: transparent !important;
+      border: none !important;
+      font-size: 14px !important;
+      color: white !important;
+    }
+    .goog-te-gadget-simple a { color: #4bc6b9 !important; }
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0 !important; }
+    .goog-te-menu-value span { color: white !important; }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      padding: 1.5rem 0 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(5,8,20,0.85);
+      transition: background 0.3s ease;
+    }
+
+    header:hover { background: rgba(5,8,20,0.95); }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+      border-radius: 14px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover img { transform: scale(1.1); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .nav-links a {
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(10,132,255,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(10,132,255,0.55);
+    }
+
+    .btn-ghost {
+      border-color: rgba(255,255,255,0.12);
+      color: var(--text);
+      background: transparent;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.04);
+      transform: translateY(-2px);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .hero {
+      padding: 3.5rem 0 3rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+      margin-bottom: 1rem;
+      background: rgba(9, 9, 18, 0.7);
+      transition: transform 0.3s ease;
+    }
+
+    .tag:hover { transform: scale(1.05); }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero-highlight {
+      background: linear-gradient(135deg, #ffffff, #a5b4fc);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 0.98rem;
+      max-width: 440px;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-bullets {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem 1.5rem;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 1.2rem 0 1.6rem;
+    }
+
+    .hero-bullets span {
+      opacity: 0.9;
+      transition: color 0.3s ease;
+    }
+
+    .hero-bullets span:hover { color: var(--text); }
+
+    .hero-footnote {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+    }
+
+    .hero-mockup {
+      background: radial-gradient(circle at top, #1b2345 0, #050814 60%);
+      border-radius: 26px;
+      padding: 1.2rem;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 18px 60px rgba(15, 23, 42, 0.9);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .hero-mockup:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 1);
+    }
+
+    .mockup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .mockup-screen {
+      background: rgba(5,8,20,0.9);
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .mockup-title {
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .mockup-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      background: rgba(56,189,248,0.12);
+      color: #7dd3fc;
+      margin-bottom: 0.8rem;
+      transition: background 0.3s ease;
+    }
+
+    .mockup-chip:hover { background: rgba(56,189,248,0.2); }
+
+    .mockup-list {
+      display: grid;
+      gap: 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .mockup-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0.65rem;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .mockup-item:hover {
+      transform: translateX(5px);
+      background: rgba(15,23,42,1);
+    }
+
+    .mockup-item-label {
+      font-size: 0.8rem;
+    }
+
+    .mockup-item-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .badge-pill {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(52,211,153,0.18);
+      color: #6ee7b7;
+    }
+
+    section {
+      padding: 3rem 0;
+      opacity: 0;
+      animation: fadeIn 0.8s ease-out 0.2s forwards;
+    }
+
+    .section-heading {
+      text-align: left;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-heading h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 520px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 1.2rem;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .pill-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      color: var(--accent);
+    }
+
+    .timeline {
+      border-left: 1px dashed var(--border);
+      padding-left: 1.2rem;
+      margin-left: 0.2rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .timeline-item {
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.8s; }
+
+    .timeline-item::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 2px solid var(--accent);
+      background: var(--bg);
+      position: absolute;
+      left: -1.65rem;
+      top: 0.25rem;
+      transition: transform 0.3s ease;
+    }
+
+    .timeline-item:hover::before { transform: scale(1.3); }
+
+    .timeline-time {
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.1rem;
+    }
+
+    .timeline-title {
+      font-size: 0.93rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .timeline-text {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .price-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 1.4rem;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      transition: transform 0.4s ease;
+    }
+
+    .price-card:hover { transform: scale(1.02); }
+
+    .price-card.featured {
+      border-color: rgba(14, 165, 233, 0.8);
+      box-shadow: 0 16px 50px rgba(8,47,73,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-tag {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .price-tag span {
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .price-list {
+      list-style: none;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 0.3rem 0 0.7rem;
+    }
+
+    .price-list li {
+      margin-bottom: 0.25rem;
+      transition: color 0.3s ease;
+    }
+
+    .price-list li:hover { color: var(--text); }
+
+    .faq {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .faq-item {
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item:hover { transform: translateY(-3px); }
+
+    .faq-item h3 {
+      font-size: 0.96rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .faq-item p {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 2rem 0 3rem;
+      border-top: 1px solid rgba(148,163,184,0.18);
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeIn 1s ease-out 1s forwards;
+    }
+
+    footer .foot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    footer a {
+      color: var(--muted);
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: minmax(0, 1fr); }
+      .hero-mockup { order: -1; }
+      .grid-3, .pricing-grid, .grid-2 { grid-template-columns: minmax(0, 1fr); }
+      .nav-links { display: none; }
+      #google_translate_element { top: 20px; right: 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 0 1rem; }
+      .btn { width: 100%; margin-bottom: 0.5rem; }
+      .nav-cta { flex-direction: column; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Google Translate Dropdown (klik untuk tukar bahasa: Melayu, English, dll) -->
+  <div id="google_translate_element" title="Terjemah ke bahasa lain (auto detect)"></div>
+
+  <header>
+    <div class="container nav">
+      <div class="logo">
+        <img src="logo.png" alt="MindPilot AI Logo">
+        <span>MindPilot AI</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav-cta">
+        <button class="btn btn-ghost">Log in</button>
+        <button class="btn btn-primary">Start Free Trial</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero fade-in">
+      <div class="container hero-grid">
+        <div>
+          <div class="tag">New · AI life assistant for adults 25–50</div>
+          <h1>
+            <span class="hero-highlight">MindPilot AI</span><br />
+            The assistant thinks ahead for you.
+          </h1>
+          <p>
+            Automate your tasks, money, and daily routines with a single AI
+            assistant built for real life — not just work.
+          </p>
+          <div class="hero-bullets">
+            <span>• AI that plans your day for you</span>
+            <span>• Clear view of your spending & bills</span>
+            <span>• Smarter routines, less mental load</span>
+            <span>• One app to organize your entire life</span>
+          </div>
+          <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <button class="btn btn-primary">
+              Start 7-Day Free Trial →
+            </button>
+            <button class="btn btn-ghost">
+              Try Free Forever
+            </button>
+          </div>
+          <p class="hero-footnote">
+            No credit card needed for the Free plan. Cancel or downgrade anytime.
+          </p>
+        </div>
+
+        <div class="hero-mockup">
+          <div class="mockup-header">
+            <span>Today with MindPilot</span>
+            <span style="font-size:0.75rem; color:var(--muted);">
+              AI mode: Active
+            </span>
+          </div>
+          <div class="mockup-screen">
+            <div class="mockup-chip">Daily plan generated by AI</div>
+            <div class="mockup-title">Here’s how I’m planning your day:</div>
+            <div class="mockup-list">
+              <div class="mockup-item">
+                <div>
+                  <div class="mockup-item-label">Deep work block</div>
+                  <div class="mockup-item-meta">9:00–11:00 · High-focus tasks</div>
+                </div>
+                <span class="badge-pill">Priority</span>
+              </div>
+              <div class="mockup-item">
+                <div>
+                  <div class="mockup-item-label">Bills & money check-in</div>
+                  <div class="mockup-item-meta">
+                    You have 1 bill due in 3 days
+                  </div>
+                </div>
+                <span class="badge-pill">Finance</span>
+              </div>
+              <div class="mockup-item">
+                <div>
+                  <div class="mockup-item-label">Energy break & stretch</div>
+                  <div class="mockup-item-meta">
+                    3:00 PM · Based on your calendar
+                  </div>
+                </div>
+                <span class="badge-pill">Wellness</span>
+              </div>
+              <div class="mockup-item">
+                <div>
+                  <div class="mockup-item-label">Evening recap</div>
+                  <div class="mockup-item-meta">
+                    I’ll send a 60-second summary at 9:00 PM
+                  </div>
+                </div>
+                <span class="badge-pill">Summary</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAIN / SOLUTION -->
+    <section class="fade-in">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Life is busy. Your brain shouldn’t do all the work.</h2>
+          <p>
+            Between work, bills, family, messages, and a never-ending to-do list,
+            most adults are running on mental overload. MindPilot AI takes over
+            the heavy thinking — so you can focus on living.
+          </p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Too many tasks</h3>
+            <p>Your brain is juggling work, home, errands, and side projects.</p>
+          </div>
+          <div class="card">
+            <h3>Messy money</h3>
+            <p>You don’t really know where your money goes every month.</p>
+          </div>
+          <div class="card">
+            <h3>No clear routine</h3>
+            <p>You react to your day instead of having a plan.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="fade-in">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Everything you need, powered by AI.</h2>
+          <p>
+            MindPilot AI combines tasks, finances, routines, coaching, and
+            summaries into one intelligent assistant.
+          </p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="pill-label">Tasks</div>
+            <h3>AI Task Pilot</h3>
+            <p>
+              Let MindPilot create, sort, and prioritize your tasks based on
+              habits, deadlines, and energy levels.
+            </p>
+          </div>
+          <div class="card">
+            <div class="pill-label">Money</div>
+            <h3>Smart Money View</h3>
+            <p>
+              Track spending, see patterns, and get gentle alerts when you’re
+              going off-budget.
+            </p>
+          </div>
+          <div class="card">
+            <div class="pill-label">Organization</div>
+            <h3>Life Organizer Hub</h3>
+            <p>
+              Keep documents, notes, and important info in one secure, searchable
+              place.
+            </p>
+          </div>
+          <div class="card">
+            <div class="pill-label">Habits</div>
+            <h3>Wellness & Habits Coach</h3>
+            <p>
+              Sleep, breaks, movement, reflection—MindPilot nudges you at the
+              right moments.
+            </p>
+          </div>
+          <div class="card">
+            <div class="pill-label">Goals</div>
+            <h3>Personal Goal Navigator</h3>
+            <p>
+              Set monthly goals and get a simple, realistic action plan each
+              week.
+            </p>
+          </div>
+          <div class="card">
+            <div class="pill-label">Summaries</div>
+            <h3>Message & Email Summaries</h3>
+            <p>
+              Let AI read the long stuff and give you the 10-second version.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="fade-in">
+      <div class="container grid-2">
+        <div>
+          <div class="section-heading">
+            <h2>From sign-up to “life on autopilot” in 3 steps.</h2>
+            <p>You stay in control. MindPilot just thinks ahead for you.</p>
+          </div>
+          <div class="card">
+            <h3>1 · Tell MindPilot who you are</h3>
+            <p>
+              Share your basic routine, work style, and what you want to improve:
+              focus, money, balance, or all three.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0.8rem;">
+            <h3>2 · Connect what matters</h3>
+            <p>
+              Optionally link your calendar, email, and finance sources so AI has
+              the full picture.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0.8rem;">
+            <h3>3 · Let AI take the wheel</h3>
+            <p>
+              Every morning, MindPilot gives you a clear plan. Every night, it
+              gives you a summary.
+            </p>
+          </div>
+        </div>
+        <div>
+          <div class="section-heading">
+            <h2>What MindPilot does in a normal day.</h2>
+          </div>
+          <div class="card">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-time">7:00 AM</div>
+                <div class="timeline-title">Daily plan, auto-generated</div>
+                <div class="timeline-text">
+                  MindPilot builds a realistic plan based on your meetings,
+                  deadlines, and energy.
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">11:30 AM</div>
+                <div class="timeline-title">Money check-in</div>
+                <div class="timeline-text">
+                  You get a quick alert: “One bill due in 3 days. Want me to
+                  adjust today’s spending target?”
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">3:00 PM</div>
+                <div class="timeline-title">Energy break</div>
+                <div class="timeline-text">
+                  After back-to-back calls, MindPilot suggests a 5-minute reset
+                  so you don’t burn out.
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">9:00 PM</div>
+                <div class="timeline-title">Evening recap</div>
+                <div class="timeline-text">
+                  A 60-second summary of what you did, what you saved, and what
+                  tomorrow looks like.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="fade-in">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Choose your way to start.</h2>
+          <p>
+            MindPilot AI is free forever. Upgrade only when you’re ready for
+            full automation.
+          </p>
+        </div>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <div class="pill-label">Free plan</div>
+            <h3>Free Forever</h3>
+            <p class="price-tag">RM0 <span>/ lifetime</span></p>
+            <ul class="price-list">
+              <li>✔ Lifetime access</li>
+              <li>✔ Basic task manager & reminders</li>
+              <li>✔ Simple notes & documents</li>
+              <li>✔ Up to 10 AI responses per day</li>
+              <li>✔ Light, non-intrusive ads</li>
+            </ul>
+            <button class="btn btn-ghost" style="margin-top:0.4rem; width:100%;">
+              Start Free Forever
+            </button>
+          </div>
+
+          <div class="price-card featured">
+            <div class="pill-label">Most popular</div>
+            <h3>Premium</h3>
+            <p class="price-tag">RM9.90 <span>/ month</span></p>
+            <ul class="price-list">
+              <li>✔ 7-day free trial</li>
+              <li>✔ Unlimited AI responses</li>
+              <li>✔ Full task automation & prioritization</li>
+              <li>✔ Smart financial insights & bill alerts</li>
+              <li>✔ Unlimited document and note storage</li>
+              <li>✔ Advanced wellness & habit coaching</li>
+              <li>✔ No ads, priority performance</li>
+            </ul>
+            <button class="btn btn-primary" style="margin-top:0.4rem; width:100%;">
+              Start 7-Day Free Trial
+            </button>
+          </div>
+        </div>
+        <p style="margin-top:0.9rem; font-size:0.8rem; color:var(--muted);">
+          Downgrade anytime. Your data stays with you.
+        </p>
+      </div>
+    </section>
+
+    <!-- WHO IT'S FOR -->
+    <section class="fade-in">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Built for adults who do a lot.</h2>
+          <p>
+            If your brain is always “on”, MindPilot AI is built for you.
+          </p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Professionals & managers</h3>
+            <p>Stay on top of meetings, projects, and follow-ups without burning out.</p>
+          </div>
+          <div class="card">
+            <h3>Freelancers & creators</h3>
+            <p>Juggle clients, deadlines, and invoices with a clear daily plan.</p>
+          </div>
+          <div class="card">
+            <h3>Parents & families</h3>
+            <p>Keep track of bills, appointments, and routines in one calm view.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="fade-in">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Frequently asked questions</h2>
+        </div>
+        <div class="faq">
+          <div class="faq-item">
+            <h3>Do I need a credit card to use MindPilot AI?</h3>
+            <p>No. You can stay on the Free plan for life with no payment required.</p>
+          </div>
+          <div class="faq-item">
+            <h3>What happens after my 7-day trial?</h3>
+            <p>
+              You can continue with Premium at RM9.90/month or downgrade to the
+              Free plan — your data stays safe.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Is my data private?</h3>
+            <p>
+              Yes. Your data is encrypted and never sold. You stay in control of
+              what you connect and what you store.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Is MindPilot AI only for productivity nerds?</h3>
+            <p>
+              No. It’s designed for normal adults who want less mental stress and
+              more clarity.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Which devices are supported?</h3>
+            <p>
+              MindPilot AI is designed for mobile first, with support planned for
+              iOS and Android.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="fade-in">
+      <div class="container">
+        <div class="card" style="text-align:center; padding:2rem 1.5rem;">
+          <h2 style="font-size:1.5rem; margin-bottom:0.4rem;">
+            Ready to let AI think ahead for you?
+          </h2>
+          <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">
+            Start with Free Forever or unlock everything with a 7-day Premium trial.
+          </p>
+          <div style="display:flex; justify-content:center; gap:0.8rem; flex-wrap:wrap;">
+            <button class="btn btn-primary">Start 7-Day Free Trial</button>
+            <button class="btn btn-ghost">Use Free Plan Forever</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot-row">
+      <span>© <script>document.write(new Date().getFullYear())</script> MindPilot AI. All rights reserved.</span>
+      <span>Made for humans who do a lot.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
